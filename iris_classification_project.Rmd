@@ -1,0 +1,78 @@
+
+---
+title: "Iris Classification Project"
+output: html_document
+date: "2024-07-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Install necessary packages (uncomment if not installed)
+# install.packages("tidyverse")
+# install.packages("caret")
+# install.packages("e1071")
+
+# Load libraries
+library(tidyverse)
+library(caret)
+library(e1071)
+```
+
+# Load and Explore the Data
+```{r load-data}
+# Load the iris dataset
+data(iris)
+
+# View the first few rows of the dataset
+head(iris)
+
+# Summary of the dataset
+summary(iris)
+
+# Check for missing values
+sum(is.na(iris))
+```
+
+# Split the Data
+```{r split-data}
+# Set seed for reproducibility
+set.seed(123)
+
+# Split the data into training (70%) and testing (30%) sets
+trainIndex <- createDataPartition(iris$Species, p = .7, 
+                                  list = FALSE, 
+                                  times = 1)
+irisTrain <- iris[ trainIndex,]
+irisTest  <- iris[-trainIndex,]
+```
+
+# Train the Model
+```{r train-model}
+# Train the model using Support Vector Machine (SVM)
+model <- train(Species ~ ., data = irisTrain, method = "svmLinear")
+
+# View the model
+print(model)
+```
+
+# Evaluate the Model
+```{r evaluate-model}
+# Make predictions on the test set
+predictions <- predict(model, irisTest)
+
+# Confusion matrix to evaluate the predictions
+confusionMatrix(predictions, irisTest$Species)
+```
+
+# Make Predictions on New Data
+```{r make-predictions}
+# Example new data for prediction
+newData <- data.frame(Sepal.Length = c(5.1, 6.5),
+                      Sepal.Width = c(3.5, 3.0),
+                      Petal.Length = c(1.4, 5.5),
+                      Petal.Width = c(0.2, 2.2))
+
+# Predict species for the new data
+predictedSpecies <- predict(model, newData)
+print(predictedSpecies)
+```
